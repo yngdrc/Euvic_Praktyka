@@ -5,9 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.euvic.praktyka_kheller.model.HeroDetails
+import com.euvic.praktyka_kheller.repo.MainRepo
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.AbsentLiveData
+import com.euvic.praktyka_kheller.util.DataState
 
 class MainViewModel: ViewModel() {
     private val _stateEvent: MutableLiveData<MainStateEvent> = MutableLiveData()
@@ -16,32 +18,18 @@ class MainViewModel: ViewModel() {
     val viewState: LiveData<MainViewState>
     get() = _viewState
 
-    val dataState: LiveData<MainViewState> = Transformations
+    val dataState: LiveData<DataState<MainViewState>> = Transformations
         .switchMap(_stateEvent) { stateEvent ->
             stateEvent?.let {
                 handleStateEvent(stateEvent)
             }
         }
 
-    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<MainViewState> {
-        println("DEBUG: New StateEvent detected: $stateEvent")
+    fun handleStateEvent(stateEvent: MainStateEvent): LiveData<DataState<MainViewState>> {
+        println("DEBUG: New StateEvent detected: ${stateEvent}")
         when(stateEvent) {
             is MainStateEvent.GetHeroesEvent -> {
-                return object: LiveData<MainViewState>() {
-                    override fun onActive() {
-                        super.onActive()
-                        val heroesList: ArrayList<HeroDetails> = ArrayList()
-                        heroesList.add(HeroDetails(
-                            id = 1,
-                            name = "npc_dota_hero_antimage",
-                            localized_name = "Anti-Mage",
-                            primary_attr = "agi",
-                            attack_type = "Melee",
-                            roles = listOf("Carry","Escape","Nuker")
-                        ))
-                        value = MainViewState(heroes = heroesList)
-                    }
-                }
+                return MainRepo.getHeroes()
             }
             is MainStateEvent.None -> {
                 return AbsentLiveData.create()

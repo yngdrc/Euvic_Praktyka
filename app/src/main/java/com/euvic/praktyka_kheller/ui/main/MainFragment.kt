@@ -23,9 +23,15 @@ class MainFragment : Fragment() {
     fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
             println("DEBUG: DataState: $dataState")
-            dataState.heroes?.let {
-                viewModel.setHeroesListData(it)
+            dataState.data?.let {  mainViewState ->
+                mainViewState.heroes?.let {
+                    viewModel.setHeroesListData(it)
+                }
             }
+
+            dataState.message?.let {  }
+
+            dataState.loading.let {  }
         })
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->

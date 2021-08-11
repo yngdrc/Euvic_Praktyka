@@ -1,15 +1,23 @@
 package com.euvic.praktyka_kheller.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.euvic.praktyka_kheller.R
+import com.euvic.praktyka_kheller.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
+import com.euvic.praktyka_kheller.util.TopSpacingItemDecoration
+import kotlinx.android.synthetic.main.fragment_main.*
+import java.lang.ClassCastException
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), HeroesListAdapter.Interaction {
+    lateinit var dataStateListener: DataStateListener
     lateinit var viewModel: MainViewModel
+    lateinit var heroesListAdapter: HeroesListAdapter
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -18,25 +26,37 @@ class MainFragment : Fragment() {
         }?: throw Exception("Invalid activity")
 
         subscribeObservers()
+        initRecyclerView()
+    }
+
+    private fun initRecyclerView() {
+        recycler_view.apply {
+            layoutManager = LinearLayoutManager(activity)
+            val topSpacingItemDecoration = TopSpacingItemDecoration(30)
+            addItemDecoration(topSpacingItemDecoration)
+            heroesListAdapter = HeroesListAdapter(this@MainFragment)
+            adapter = heroesListAdapter
+        }
     }
 
     fun subscribeObservers() {
         viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
-            println("DEBUG: DataState: $dataState")
-            dataState.data?.let {  mainViewState ->
-                mainViewState.heroes?.let {
-                    viewModel.setHeroesListData(it)
+
+            dataStateListener.onDataStateChange(dataState)
+            dataState.data?.let {  event ->
+                event.getContentIfNotHandled()?.let { mainViewState ->
+                    println("DEBUG: DataState: $dataState")
+                    mainViewState.heroes?.let {
+                        viewModel.setHeroesListData(it)
+                    }
                 }
             }
-
-            dataState.message?.let {  }
-
-            dataState.loading.let {  }
         })
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.heroes?.let {
                 println("DEBUG: Setting heroes to RecyclerView")
+                heroesListAdapter.submitList(it)
             }
         })
     }
@@ -63,5 +83,18 @@ class MainFragment : Fragment() {
 
     private fun triggerGetHeroesEvent() {
         viewModel.setStateEvent(MainStateEvent.GetHeroesEvent())
+    }
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        try {
+            dataStateListener = context as DataStateListener
+        } catch (e: ClassCastException) {
+            println("DEBUG: $context must implement DataStateListener")
+        }
+    }
+
+    override fun onItemSelected(position: Int, item: HeroDetails) {
+        println("DEBUG: $position, $item")
     }
 }

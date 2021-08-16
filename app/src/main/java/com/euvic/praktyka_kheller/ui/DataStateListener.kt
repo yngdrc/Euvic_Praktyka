@@ -1,4 +1,4 @@
-package com.euvic.praktyka_kheller.ui.main
+package com.euvic.praktyka_kheller.ui
 
 import com.euvic.praktyka_kheller.util.DataState
 

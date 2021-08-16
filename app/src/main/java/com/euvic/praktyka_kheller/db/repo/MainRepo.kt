@@ -13,7 +13,27 @@ object MainRepo {
                 result.value = DataState.data(
                     null,
                     MainViewState(
-                        heroes = response.body
+                        heroes = response.body,
+                        details = null
+                    )
+                )
+            }
+
+            override fun createCall(): LiveData<GenericApiResponse<List<HeroDetails>>> {
+                return RetrofitBuilderOpenDota.apiService.getAllHeroes()
+            }
+
+        }.asLiveData()
+    }
+
+    fun setDetails(heroID: Int): LiveData<DataState<MainViewState>> {
+        return object: NetworkBoundResource<List<HeroDetails>, MainViewState>() {
+            override fun handleApiSuccessResponse(response: ApiSuccessResponse<List<HeroDetails>>) {
+                result.value = DataState.data(
+                    null,
+                    MainViewState(
+                        heroes = null,
+                        details = response.body[heroID]
                     )
                 )
             }

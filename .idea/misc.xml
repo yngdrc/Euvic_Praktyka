@@ -4,7 +4,9 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Users/kaheller/AndroidStudioProjects/Euvic_Praktyka_KHeller/app/src/main/res/layout/activity_main.xml" value="0.34375" />
+        <entry key="..\:/Users/kaheller/AndroidStudioProjects/Euvic_Praktyka_KHeller/app/src/main/res/layout/fragment_hero_details.xml" value="0.20380434782608695" />
         <entry key="..\:/Users/kaheller/AndroidStudioProjects/Euvic_Praktyka_KHeller/app/src/main/res/layout/fragment_main.xml" value="0.34375" />
+        <entry key="..\:/Users/kaheller/AndroidStudioProjects/Euvic_Praktyka_KHeller/app/src/main/res/layout/layout_hero_details.xml" value="0.20380434782608695" />
         <entry key="..\:/Users/kaheller/AndroidStudioProjects/Euvic_Praktyka_KHeller/app/src/main/res/layout/layout_heroeslist_item.xml" value="0.264" />
       </map>
     </option>

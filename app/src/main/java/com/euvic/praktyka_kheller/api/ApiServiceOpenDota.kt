@@ -8,5 +8,4 @@ import retrofit2.http.GET
 interface ApiServiceOpenDota {
     @GET("heroes")
     fun getAllHeroes(): LiveData<GenericApiResponse<List<HeroDetails>>>
-
 }

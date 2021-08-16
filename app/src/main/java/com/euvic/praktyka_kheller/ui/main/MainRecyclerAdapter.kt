@@ -2,17 +2,13 @@ package com.euvic.praktyka_kheller.ui.main
 
 import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import com.euvic.praktyka_kheller.R
 import com.euvic.praktyka_kheller.db.model.HeroDetails
-import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_URL
-import com.google.accompanist.appcompattheme.AppCompatTheme
 
-class HeroesListAdapter(private val interaction: Interaction? = null) :
+class MainRecyclerAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     val DIFF_CALLBACK = object : DiffUtil.ItemCallback<HeroDetails>() {
@@ -37,7 +33,7 @@ class HeroesListAdapter(private val interaction: Interaction? = null) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
 
-        return HeroDetailsViewHolder(
+        return HeroViewHolder(
             LayoutInflater.from(parent.context).inflate(
                 R.layout.layout_heroeslist_item,
                 parent,
@@ -47,35 +43,9 @@ class HeroesListAdapter(private val interaction: Interaction? = null) :
         )
     }
 
-    class HeroDetailsViewHolder
-    constructor(
-        itemView: View,
-        private val interaction: Interaction?
-    ) : RecyclerView.ViewHolder(itemView) {
-
-        fun bind(item: HeroDetails) = with(itemView) {
-            itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, item)
-            }
-            val greeting = findViewById<ComposeView>(R.id.hero_name)
-            greeting.setContent {
-                AppCompatTheme() {
-                    item.localized_name?.let {
-                        setHeroItem(item.localized_name, item.roles,null?: STEAM_DOTA_IMAGES_URL.plus(
-                            item.name?.replace(
-                                "npc_dota_hero_",
-                                ""
-                            ).plus("_vert.jpg")
-                        ))
-                    }
-                }
-            }
-        }
-    }
-
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
-            is HeroDetailsViewHolder -> {
+            is HeroViewHolder -> {
                 holder.bind(differ.currentList.get(position))
             }
         }

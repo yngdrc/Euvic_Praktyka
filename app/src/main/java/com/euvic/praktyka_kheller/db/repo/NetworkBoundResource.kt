@@ -34,7 +34,6 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         when(response) {
             is ApiSuccessResponse -> {
                 handleApiSuccessResponse(response)
-                
             }
 
             is ApiErrorResponse -> {

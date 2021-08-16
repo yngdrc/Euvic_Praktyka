@@ -1,4 +1,4 @@
-package com.euvic.praktyka_kheller.model
+package com.euvic.praktyka_kheller.db.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
@@ -29,9 +29,6 @@ data class HeroDetails (
     @SerializedName("roles")
     val roles: List<String>? = null,
 
-//    @Expose
-//    @SerializedName("image")
-//    val image: String? = null
 ) {
 
     override fun equals(other: Any?): Boolean {
@@ -60,17 +57,15 @@ data class HeroDetails (
         if(roles != other.roles){
             return false
         }
-
-//        if(image != other.image){
+//        if(imageUrl != other.imageUrl){
 //            return false
 //        }
-
 
         return true
     }
 
     override fun toString(): String {
-        return "Hero(attack_type=$attack_type, id=$id, localized_name=$localized_name, name=$name, primary_attr=$primary_attr, roles=$roles"
+        return "Hero(attack_type=$attack_type, id=$id, localized_name=$localized_name, name=$name, primary_attr=$primary_attr, roles=$roles)"
     }
 
     override fun hashCode(): Int {
@@ -80,7 +75,7 @@ data class HeroDetails (
         result = 31 * result + (primary_attr?.hashCode() ?: 0)
         result = 31 * result + (attack_type?.hashCode() ?: 0)
         result = 31 * result + (roles?.hashCode() ?: 0)
-        // result = 31 * result + (image?.hashCode() ?: 0)
+//        result = 31 * result + (imageUrl?.hashCode() ?: 0)
         return result
     }
 }

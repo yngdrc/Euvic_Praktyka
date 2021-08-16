@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import com.euvic.praktyka_kheller.model.HeroDetails
-import com.euvic.praktyka_kheller.repo.MainRepo
+import com.euvic.praktyka_kheller.db.model.HeroDetails
+import com.euvic.praktyka_kheller.db.model.repo.MainRepo
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.AbsentLiveData

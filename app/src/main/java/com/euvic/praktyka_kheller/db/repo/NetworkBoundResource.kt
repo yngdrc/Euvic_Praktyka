@@ -1,8 +1,7 @@
-package com.euvic.praktyka_kheller.repo
+package com.euvic.praktyka_kheller.db.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.*
 import com.euvic.praktyka_kheller.util.Constants.Companion.TESTING_NETWORK_DELAY
 import kotlinx.coroutines.Dispatchers.IO
@@ -35,6 +34,7 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         when(response) {
             is ApiSuccessResponse -> {
                 handleApiSuccessResponse(response)
+                
             }
 
             is ApiErrorResponse -> {

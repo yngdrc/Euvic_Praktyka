@@ -4,12 +4,13 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
-import com.bumptech.glide.Glide
 import com.euvic.praktyka_kheller.R
-import com.euvic.praktyka_kheller.model.HeroDetails
-import kotlinx.android.synthetic.main.layout_heroeslist_item.view.*
+import com.euvic.praktyka_kheller.db.model.HeroDetails
+import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_URL
+import com.google.accompanist.appcompattheme.AppCompatTheme
 
 class HeroesListAdapter(private val interaction: Interaction? = null) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
@@ -46,6 +47,32 @@ class HeroesListAdapter(private val interaction: Interaction? = null) :
         )
     }
 
+    class HeroDetailsViewHolder
+    constructor(
+        itemView: View,
+        private val interaction: Interaction?
+    ) : RecyclerView.ViewHolder(itemView) {
+
+        fun bind(item: HeroDetails) = with(itemView) {
+            itemView.setOnClickListener {
+                interaction?.onItemSelected(adapterPosition, item)
+            }
+            val greeting = findViewById<ComposeView>(R.id.hero_name)
+            greeting.setContent {
+                AppCompatTheme() {
+                    item.localized_name?.let {
+                        setHeroItem(item.localized_name, item.roles,null?: STEAM_DOTA_IMAGES_URL.plus(
+                            item.name?.replace(
+                                "npc_dota_hero_",
+                                ""
+                            ).plus("_vert.jpg")
+                        ))
+                    }
+                }
+            }
+        }
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is HeroDetailsViewHolder -> {
@@ -60,26 +87,6 @@ class HeroesListAdapter(private val interaction: Interaction? = null) :
 
     fun submitList(list: List<HeroDetails>) {
         differ.submitList(list)
-    }
-
-    class HeroDetailsViewHolder
-    constructor(
-        itemView: View,
-        private val interaction: Interaction?
-    ) : RecyclerView.ViewHolder(itemView) {
-
-        fun bind(item: HeroDetails) = with(itemView) {
-            itemView.setOnClickListener {
-                interaction?.onItemSelected(adapterPosition, item)
-            }
-
-            itemView.hero_name.text = item.localized_name
-
-//            itemView.hero_name.text = item.localized_name
-//            Glide.with(itemView.context)
-//                .load(item.image)
-//                .into(itemView.blog_image)
-        }
     }
 
     interface Interaction {

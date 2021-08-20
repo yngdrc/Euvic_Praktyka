@@ -18,9 +18,6 @@ import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.DataStateListener
 import com.euvic.praktyka_kheller.ui.details.DetailsFragment
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.fragment_main.*
-import kotlinx.android.synthetic.main.fragment_main.view.*
 import java.lang.ClassCastException
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
@@ -33,11 +30,10 @@ import com.google.accompanist.swiperefresh.SwipeRefreshState
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlin.reflect.KProperty
 
-class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
+class AllHeroesFragment : Fragment() {
 
     lateinit var dataStateListener: DataStateListener
     lateinit var viewModel: MainViewModel
-    lateinit var heroesListAdapter: MainRecyclerAdapter
 
     private var heroes: List<HeroDetails>? = null
 
@@ -57,14 +53,10 @@ class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
             }
         }
     }
-//    ): View? {
-//        return inflater.inflate(R.layout.fragment_main, container, false)
-//    }
 
     @Composable
     fun setSwipeRefresh(viewModel: MainViewModel) {
         val dataExample = viewModel.dataState.observeAsState()
-        val isRefreshing by viewModel.isRefreshing.collectAsState()
         dataExample.value?.let {
             viewModel.dataState.value?.let { it1 ->
                 SwipeRefresh(state = it1.loading, onRefresh = { triggerGetHeroesEvent() }) {
@@ -72,21 +64,23 @@ class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
                         modifier = Modifier
                             .fillMaxSize()
                     ) {
-                        items(
-                            count = 30
-                        ) { index ->
-                            dataExample.value?.let {
-                                val heroesList = dataExample.value?.data?.peekContent()?.heroes
-                                heroesList?.get(index)?.let { it1 ->
-                                    setHeroItem(
-                                        it1,
-                                        null ?: Constants.STEAM_DOTA_IMAGES_URL.plus(
-                                            it1.name?.replace(
-                                                Constants.STEAM_DOTA_IMAGES_PREFIX,
-                                                ""
-                                            ).plus(Constants.STEAM_DOTA_IMAGES_RES)
+                        dataExample.value!!.data?.peekContent()?.heroes?.let { it2 ->
+                            items(
+                                count = it2.size
+                            ) { index ->
+                                dataExample.value?.let {
+                                    val heroesList = dataExample.value?.data?.peekContent()?.heroes
+                                    heroesList?.get(index)?.let { it1 ->
+                                        setHeroItem(
+                                            it1,
+                                            null ?: Constants.STEAM_DOTA_IMAGES_URL.plus(
+                                                it1.name?.replace(
+                                                    Constants.STEAM_DOTA_IMAGES_PREFIX,
+                                                    ""
+                                                ).plus(Constants.STEAM_DOTA_IMAGES_RES)
+                                            ), viewModel
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
@@ -99,18 +93,7 @@ class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         subscribeObservers()
-        initRecyclerView()
         triggerGetHeroesEvent()
-    }
-
-    private fun initRecyclerView() {
-        recycler_view.apply {
-//            layoutManager = LinearLayoutManager(activity)
-//            val topSpacingItemDecoration = TopSpacingItemDecoration(15)
-//            addItemDecoration(topSpacingItemDecoration)
-//            heroesListAdapter = MainRecyclerAdapter(this@AllHeroesFragment)
-//            adapter = heroesListAdapter
-        }
     }
 
     fun subscribeObservers() {
@@ -133,16 +116,12 @@ class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
 
         viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
             viewState.heroes?.let {
-                println("DEBUG: Setting heroes to RecyclerView")
+                //println("DEBUG: Setting heroes to RecyclerView")
                 //heroesListAdapter.submitList(it)
             }
 
             viewState.details?.let {
                 // println("DEBUG: Setting details to RecyclerView")
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.fragment_container, DetailsFragment(), tag)
-                    .addToBackStack(tag)
-                    .commit()
             }
         })
     }
@@ -162,10 +141,5 @@ class AllHeroesFragment : Fragment(), MainRecyclerAdapter.Interaction {
         } catch (e: ClassCastException) {
             println("DEBUG: $context must implement DataStateListener")
         }
-    }
-
-    override fun onItemSelected(position: Int, item: HeroDetails) {
-        println("DEBUG: $position, $item")
-        item.id?.let { triggerGetHeroDetails(it) }
     }
 }

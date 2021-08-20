@@ -14,17 +14,24 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberImagePainter
 import com.euvic.praktyka_kheller.db.model.HeroDetails
-import com.euvic.praktyka_kheller.ui.main.MainRecyclerAdapter
+import com.euvic.praktyka_kheller.ui.main.MainViewModel
+import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.theme.HeroItemBg
 import com.euvic.praktyka_kheller.ui.theme.HeroNameColor
 import com.euvic.praktyka_kheller.ui.theme.Shapes
 
 @Composable
-fun setHeroItem(item: HeroDetails, heroImage: String?) {
+fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel) {
     Surface(
         shape = Shapes.medium,
         modifier = Modifier
-            //.clickable(onClick = { interaction.onItemSelected(adapterPosition, item) })
+            .clickable(onClick = {
+                item.id?.let {
+                    MainStateEvent.GetDetailsEvent(
+                        it
+                    )
+                }?.let { viewModel.setStateEvent(it) }
+            })
             .padding(16.dp, 4.dp, 16.dp, 4.dp)
             .fillMaxWidth()
     ) {
@@ -57,11 +64,4 @@ fun setHeroItem(item: HeroDetails, heroImage: String?) {
             }
         }
     }
-}
-
-@Composable
-fun setDetailsView(heroName: String) {
-    Text(
-        text = heroName
-    )
 }

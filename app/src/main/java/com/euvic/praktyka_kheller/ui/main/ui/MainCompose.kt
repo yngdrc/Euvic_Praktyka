@@ -4,9 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
@@ -19,6 +21,8 @@ import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.theme.HeroItemBg
 import com.euvic.praktyka_kheller.ui.theme.HeroNameColor
 import com.euvic.praktyka_kheller.ui.theme.Shapes
+import com.euvic.praktyka_kheller.util.Constants
+import com.google.accompanist.swiperefresh.SwipeRefresh
 
 @Composable
 fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel) {
@@ -28,7 +32,7 @@ fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel)
             .clickable(onClick = {
                 item.id?.let {
                     MainStateEvent.GetDetailsEvent(
-                        it
+                        it-1
                     )
                 }?.let { viewModel.setStateEvent(it) }
             })
@@ -61,6 +65,42 @@ fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel)
                     color = HeroNameColor,
                     fontWeight = FontWeight.Bold,
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun setSwipeRefresh(viewModel: MainViewModel) {
+    val dataExample = viewModel.dataState.observeAsState()
+    dataExample.value?.let {
+        viewModel.dataState.value?.let { it1 ->
+            SwipeRefresh(state = it1.loading, onRefresh = { viewModel.setStateEvent(MainStateEvent.GetHeroesEvent()) }) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                ) {
+                    dataExample.value!!.data?.peekContent()?.heroes?.let { it2 ->
+                        items(
+                            count = it2.size
+                        ) { index ->
+                            dataExample.value?.let {
+                                val heroesList = dataExample.value?.data?.peekContent()?.heroes
+                                heroesList?.get(index)?.let { it1 ->
+                                    setHeroItem(
+                                        it1,
+                                        null ?: Constants.STEAM_DOTA_IMAGES_URL.plus(
+                                            it1.name?.replace(
+                                                Constants.STEAM_DOTA_IMAGES_PREFIX,
+                                                ""
+                                            ).plus(Constants.STEAM_DOTA_IMAGES_RES)
+                                        ), viewModel
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

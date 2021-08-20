@@ -23,6 +23,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.euvic.praktyka_kheller.ui.main.ui.setHeroItem
+import com.euvic.praktyka_kheller.ui.main.ui.setSwipeRefresh
 import com.euvic.praktyka_kheller.util.Constants
 import com.google.accompanist.appcompattheme.AppCompatTheme
 import com.google.accompanist.swiperefresh.SwipeRefresh
@@ -49,42 +50,6 @@ class AllHeroesFragment : Fragment() {
             setContent {
                 AppCompatTheme() {
                     setSwipeRefresh(viewModel)
-                }
-            }
-        }
-    }
-
-    @Composable
-    fun setSwipeRefresh(viewModel: MainViewModel) {
-        val dataExample = viewModel.dataState.observeAsState()
-        dataExample.value?.let {
-            viewModel.dataState.value?.let { it1 ->
-                SwipeRefresh(state = it1.loading, onRefresh = { triggerGetHeroesEvent() }) {
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                    ) {
-                        dataExample.value!!.data?.peekContent()?.heroes?.let { it2 ->
-                            items(
-                                count = it2.size
-                            ) { index ->
-                                dataExample.value?.let {
-                                    val heroesList = dataExample.value?.data?.peekContent()?.heroes
-                                    heroesList?.get(index)?.let { it1 ->
-                                        setHeroItem(
-                                            it1,
-                                            null ?: Constants.STEAM_DOTA_IMAGES_URL.plus(
-                                                it1.name?.replace(
-                                                    Constants.STEAM_DOTA_IMAGES_PREFIX,
-                                                    ""
-                                                ).plus(Constants.STEAM_DOTA_IMAGES_RES)
-                                            ), viewModel
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                    }
                 }
             }
         }
@@ -122,6 +87,10 @@ class AllHeroesFragment : Fragment() {
 
             viewState.details?.let {
                 // println("DEBUG: Setting details to RecyclerView")
+                parentFragmentManager.beginTransaction()
+                    .replace(R.id.main_nav_host_fragment, DetailsFragment(), tag)
+                    .addToBackStack(tag)
+                    .commit()
             }
         })
     }

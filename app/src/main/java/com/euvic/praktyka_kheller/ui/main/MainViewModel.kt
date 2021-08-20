@@ -1,16 +1,18 @@
 package com.euvic.praktyka_kheller.ui.main
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.db.repo.MainRepo
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.AbsentLiveData
 import com.euvic.praktyka_kheller.util.DataState
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 /*
 Handling events
@@ -22,6 +24,21 @@ class MainViewModel: ViewModel() {
 
     val viewState: LiveData<MainViewState>
     get() = _viewState
+
+    private val _isRefreshing = MutableStateFlow(false)
+
+    val isRefreshing: StateFlow<Boolean>
+        get() = _isRefreshing.asStateFlow()
+
+    fun refresh() {
+        // This doesn't handle multiple 'refreshing' tasks, don't use this
+        viewModelScope.launch {
+            // A fake 2 second 'refresh'
+            _isRefreshing.emit(true)
+            delay(2000)
+            _isRefreshing.emit(false)
+        }
+    }
 
     // Switchmap is listening for _stateEvent object, if it changes it will detect that change and execute given code
     val dataState: LiveData<DataState<MainViewState>> = Transformations

@@ -56,7 +56,7 @@ class MainActivity : FragmentActivity(), DataStateListener {
 
     private fun handleDataStateChanged(dataState: DataState<*>?) {
         dataState?.let {
-            showProgressBar(dataState.loading)
+            //showProgressBar(dataState.loading)
 
             dataState.message?.let { event ->
                 event.getContentIfNotHandled()?. let { message ->
@@ -66,12 +66,14 @@ class MainActivity : FragmentActivity(), DataStateListener {
         }
     }
 
+
     fun showToast(message: String) {
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     fun showProgressBar(isVisible: Boolean) {
-        swipe_refresh.isRefreshing = isVisible
+        //swipe_refresh.isRefreshing = isVisible
+
     }
 
     override fun onBackPressed() {

@@ -1,8 +1,11 @@
 package com.euvic.praktyka_kheller.util
 
+import com.google.accompanist.swiperefresh.SwipeRefreshState
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+
 data class DataState<T>(
     var message: Event<String>? = null,
-    var loading: Boolean = false,
+    var loading: SwipeRefreshState = SwipeRefreshState(false),
     var data: Event<T>? = null
 ) {
     companion object {
@@ -11,7 +14,7 @@ data class DataState<T>(
         ): DataState<T> {
             return DataState(
                 message = Event(message),
-                loading = false,
+                loading = SwipeRefreshState(false),
                 data = null
             )
         }
@@ -21,7 +24,7 @@ data class DataState<T>(
         ): DataState<T> {
             return DataState(
                 message = null,
-                loading = isLoading,
+                loading = SwipeRefreshState(isLoading),
                 data = null
             )
         }
@@ -32,7 +35,7 @@ data class DataState<T>(
         ): DataState<T> {
             return DataState(
                 message = Event.messageEvent(message),
-                loading = false,
+                loading = SwipeRefreshState(false),
                 data = Event.dataEvent(data)
             )
         }

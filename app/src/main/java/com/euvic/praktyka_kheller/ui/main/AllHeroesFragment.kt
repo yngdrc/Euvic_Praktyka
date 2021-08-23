@@ -21,6 +21,8 @@ import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import java.lang.ClassCastException
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.navOptions
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.euvic.praktyka_kheller.ui.main.ui.setHeroItem
 import com.euvic.praktyka_kheller.ui.main.ui.setSwipeRefresh
@@ -87,10 +89,19 @@ class AllHeroesFragment : Fragment() {
 
             viewState.details?.let {
                 // println("DEBUG: Setting details to RecyclerView")
-                parentFragmentManager.beginTransaction()
-                    .replace(R.id.main_nav_host_fragment, DetailsFragment(), tag)
-                    .addToBackStack(tag)
-                    .commit()
+                NavHostFragment.findNavController(this).navigate(
+                    R.id.action_allHeroesFragment_to_detailsFragment
+                    ,null,
+                    navOptions { // Use the Kotlin DSL for building NavOptions
+                        anim {
+                            enter = android.R.animator.fade_in
+                            exit = android.R.animator.fade_out
+                        }
+                    })
+//                parentFragmentManager.beginTransaction()
+//                    .replace(R.id.main_nav_host_fragment, DetailsFragment(), tag)
+//                    .addToBackStack(tag)
+//                    .commit()
             }
         })
     }

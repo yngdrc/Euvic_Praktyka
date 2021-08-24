@@ -98,10 +98,6 @@ class AllHeroesFragment : Fragment() {
                             exit = android.R.animator.fade_out
                         }
                     })
-//                parentFragmentManager.beginTransaction()
-//                    .replace(R.id.main_nav_host_fragment, DetailsFragment(), tag)
-//                    .addToBackStack(tag)
-//                    .commit()
             }
         })
     }

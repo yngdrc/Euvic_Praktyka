@@ -8,6 +8,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -16,15 +18,17 @@ import coil.compose.rememberImagePainter
 import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.main.MainViewModel
 import com.euvic.praktyka_kheller.util.Constants
+import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_PREFIX
+import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_RES_VERT
 
 @Composable
 fun showDetails(viewModel: MainViewModel) {
     val heroDetails: HeroDetails? = viewModel.dataState.value?.data?.peekContent()?.details
     val heroImage: String = null?: Constants.STEAM_DOTA_IMAGES_URL.plus(
         heroDetails?.name?.replace(
-            "npc_dota_hero_",
+            STEAM_DOTA_IMAGES_PREFIX,
             ""
-        ).plus("_vert.jpg"))
+        ).plus(STEAM_DOTA_IMAGES_RES_VERT))
     heroDetails?.localized_name?.let {
         Column(verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -35,11 +39,11 @@ fun showDetails(viewModel: MainViewModel) {
                 painter = rememberImagePainter(heroImage),
                 contentDescription = null,
                 modifier = Modifier
-                    .size(140.dp)
+                    .size(150.dp)
                     .clip(CircleShape)
-                    //.scale(1.8f, 1.8f)
+                    .scale(1.2f, 1.2f)
                     .align(Alignment.CenterHorizontally)
-                    .border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
+                    .border(13.5.dp, MaterialTheme.colors.secondary, CircleShape)
             )
 
             Spacer(

@@ -33,6 +33,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.NavHostFragment
+import androidx.room.Room
 import androidx.ui.core.Modifier
 import androidx.ui.core.setViewContent
 import androidx.ui.graphics.Color
@@ -40,6 +41,8 @@ import androidx.ui.layout.ConstraintLayout
 import androidx.ui.layout.fillMaxSize
 import androidx.ui.viewinterop.AndroidView
 import com.euvic.praktyka_kheller.R
+import com.euvic.praktyka_kheller.api.RetrofitBuilderOpenDota
+import com.euvic.praktyka_kheller.db.HeroesDatabase
 import com.euvic.praktyka_kheller.ui.DataStateListener
 import com.euvic.praktyka_kheller.ui.details.DetailsFragment
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
@@ -52,10 +55,12 @@ class MainActivity : FragmentActivity(), DataStateListener {
 
     lateinit var viewModel: MainViewModel
     lateinit var finalHost: NavHostFragment
+    //public lateinit var heroesDatabase: HeroesDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        //createHeroesDatabase()
         //triggerGetHeroesEvent()
 
         val fragmentContainerView = FragmentContainerView(this)
@@ -71,6 +76,17 @@ class MainActivity : FragmentActivity(), DataStateListener {
             .commit()
     }
 
+//    fun createHeroesDatabase() {
+//        heroesDatabase = Room.databaseBuilder(
+//            applicationContext,
+//            HeroesDatabase::class.java, "Heroes.db"
+//        )
+//            .build()
+//    }
+
+//    fun getHeroesDatabase(): HeroesDatabase {
+//        return this.heroesDatabase
+//    }
 
     override fun onDataStateChange(dataState: DataState<*>?) {
         handleDataStateChanged(dataState)

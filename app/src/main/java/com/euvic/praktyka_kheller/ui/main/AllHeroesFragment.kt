@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Text
@@ -40,6 +41,7 @@ class AllHeroesFragment : Fragment() {
 
     private var heroes: List<HeroDetails>? = null
 
+    @ExperimentalAnimationApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -104,10 +106,6 @@ class AllHeroesFragment : Fragment() {
 
     private fun triggerGetHeroesEvent() {
         viewModel.setStateEvent(MainStateEvent.GetHeroesEvent())
-    }
-
-    private fun triggerGetHeroDetails(heroID: Int) {
-        viewModel.setStateEvent(MainStateEvent.GetDetailsEvent(heroID))
     }
 
     override fun onAttach(context: Context) {

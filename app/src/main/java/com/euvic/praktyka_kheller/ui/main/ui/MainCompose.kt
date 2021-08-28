@@ -1,19 +1,29 @@
 package com.euvic.praktyka_kheller.ui.main.ui
 
+import android.util.Log
+import androidx.animation.MutableTransitionState
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.*
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import coil.annotation.ExperimentalCoilApi
+import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.main.MainViewModel
@@ -24,40 +34,39 @@ import com.euvic.praktyka_kheller.ui.theme.Shapes
 import com.euvic.praktyka_kheller.util.Constants
 import com.google.accompanist.swiperefresh.SwipeRefresh
 
+@ExperimentalCoilApi
+@ExperimentalAnimationApi
 @Composable
-fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel) {
+fun setHeroItem(item: HeroDetails, viewModel: MainViewModel, position: Int) {
     Surface(
         shape = Shapes.medium,
         modifier = Modifier
             .clickable(onClick = {
-                item.id?.let {
-                    MainStateEvent.GetDetailsEvent(
-                        it-1
-                    )
-                }?.let { viewModel.setStateEvent(it) }
+                viewModel.setStateEvent(MainStateEvent.GetDetailsEvent(position))
             })
             .padding(16.dp, 4.dp, 16.dp, 4.dp)
             .fillMaxWidth()
+            .clipToBounds()
     ) {
         Row(
             Modifier
                 //.border(2.dp, Color.Black, RoundedCornerShape(8.dp)
                 .background(HeroItemBg)
-                .padding(16.dp)
+                .padding(10.dp, 10.dp, 20.dp, 10.dp)
         ) {
+            var imagePainter: ImagePainter = rememberImagePainter(Constants.getHeroImageSrc(item, "_vert.jpg"))
+            if (imagePainter.state.painter == null) {
+                imagePainter = rememberImagePainter(Constants.getHeroImageSrc(item, "_lg.png"))
+            }
             Image(
-                painter = rememberImagePainter(heroImage),
+                painter = imagePainter,
                 contentDescription = null,
                 modifier = Modifier
-                    .size(58.dp)
-                    //.clip(RoundedCornerShape(8.dp))
-                    .scale(1.8f, 1.8f)
+                    .size(68.dp)
+                    .clip(CircleShape)
+                    .scale(1.2f, 1.2f)
+                    //.padding(5.dp, 0.dp, 0.dp, 0.dp)
                     //.border(1.5.dp, MaterialTheme.colors.secondary, CircleShape)
-                    .align(Alignment.Bottom)
-            )
-            Spacer(
-                Modifier
-                    .width(32.dp)
             )
             item.localized_name?.let {
                 Text(
@@ -70,6 +79,8 @@ fun setHeroItem(item: HeroDetails, heroImage: String?, viewModel: MainViewModel)
     }
 }
 
+@ExperimentalCoilApi
+@ExperimentalAnimationApi
 @Composable
 fun setSwipeRefresh(viewModel: MainViewModel) {
     val dataExample = viewModel.dataState.observeAsState()
@@ -89,12 +100,8 @@ fun setSwipeRefresh(viewModel: MainViewModel) {
                                 heroesList?.get(index)?.let { it1 ->
                                     setHeroItem(
                                         it1,
-                                        null ?: Constants.STEAM_DOTA_IMAGES_URL.plus(
-                                            it1.name?.replace(
-                                                Constants.STEAM_DOTA_IMAGES_PREFIX,
-                                                ""
-                                            ).plus(Constants.STEAM_DOTA_IMAGES_RES)
-                                        ), viewModel
+                                        viewModel,
+                                        index
                                     )
                                 }
                             }

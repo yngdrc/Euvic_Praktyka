@@ -2,6 +2,7 @@ package com.euvic.praktyka_kheller.db.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import androidx.room.Room
 import com.euvic.praktyka_kheller.util.*
 import com.euvic.praktyka_kheller.util.Constants.Companion.TESTING_NETWORK_DELAY
 import com.google.accompanist.swiperefresh.SwipeRefreshState
@@ -19,7 +20,7 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
         result.value = DataState.loading(true)
         GlobalScope.launch(IO) {
             delay(TESTING_NETWORK_DELAY)
-            
+
             withContext(Main) {
                 val apiResponse = createCall()
                 result.addSource(apiResponse) { response ->
@@ -39,21 +40,24 @@ abstract class NetworkBoundResource<ResponseObject, ViewStateType> {
 
             is ApiErrorResponse -> {
                 println("DEBUG: NetworkBoundResource: ${response.errorMessage}")
-                onReturnError(response.errorMessage)
+                handleApiError(response.errorMessage)
+                //onReturnError(response.errorMessage)
             }
 
             is ApiEmptyResponse -> {
                 println("DEBUG: NetworkBoundingResource: Empty response")
-                onReturnError("Empty response")
+                //onReturnError("Empty response")
             }
         }
     }
 
-    fun onReturnError(message: String) {
-        result.value = DataState.error(message)
-    }
+//    fun onReturnError(message: String) {
+//        result.value = DataState.error(message)
+//    }
 
     abstract fun handleApiSuccessResponse(response: ApiSuccessResponse<ResponseObject>)
+
+    abstract fun handleApiError(apiError: String)
 
     abstract fun createCall(): LiveData<GenericApiResponse<ResponseObject>>
 

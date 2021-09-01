@@ -2,46 +2,28 @@ package com.euvic.praktyka_kheller.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.euvic.praktyka_kheller.R
-import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.DataStateListener
-import com.euvic.praktyka_kheller.ui.details.DetailsFragment
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import java.lang.ClassCastException
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Modifier
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.euvic.praktyka_kheller.ui.main.ui.setHeroItem
-import com.euvic.praktyka_kheller.ui.main.ui.setSwipeRefresh
-import com.euvic.praktyka_kheller.util.Constants
+import coil.annotation.ExperimentalCoilApi
+import com.euvic.praktyka_kheller.ui.main.ui.SetSwipeRefresh
 import com.google.accompanist.appcompattheme.AppCompatTheme
-import com.google.accompanist.swiperefresh.SwipeRefresh
-import com.google.accompanist.swiperefresh.SwipeRefreshState
-import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
-import kotlin.reflect.KProperty
 
+@ExperimentalCoilApi
+@ExperimentalAnimationApi
 class AllHeroesFragment : Fragment() {
 
-    lateinit var dataStateListener: DataStateListener
-    lateinit var viewModel: MainViewModel
+    private lateinit var dataStateListener: DataStateListener
+    private lateinit var viewModel: MainViewModel
 
-    private var heroes: List<HeroDetails>? = null
-
-    @ExperimentalAnimationApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -52,8 +34,8 @@ class AllHeroesFragment : Fragment() {
         }?: throw Exception("Invalid activity")
         return ComposeView(requireContext()).apply {
             setContent {
-                AppCompatTheme() {
-                    setSwipeRefresh(viewModel)
+                AppCompatTheme {
+                    SetSwipeRefresh(viewModel)
                 }
             }
         }
@@ -65,8 +47,8 @@ class AllHeroesFragment : Fragment() {
         triggerGetHeroesEvent()
     }
 
-    fun subscribeObservers() {
-        viewModel.dataState.observe(viewLifecycleOwner, Observer { dataState ->
+    private fun subscribeObservers() {
+        viewModel.dataState.observe(viewLifecycleOwner, { dataState ->
 
             dataStateListener.onDataStateChange(dataState)
             dataState.data?.let {  event ->
@@ -83,7 +65,7 @@ class AllHeroesFragment : Fragment() {
             }
         })
 
-        viewModel.viewState.observe(viewLifecycleOwner, Observer { viewState ->
+        viewModel.viewState.observe(viewLifecycleOwner, { viewState ->
             viewState.heroes?.let {
                 //println("DEBUG: Setting heroes to RecyclerView")
                 //heroesListAdapter.submitList(it)
@@ -105,7 +87,7 @@ class AllHeroesFragment : Fragment() {
     }
 
     private fun triggerGetHeroesEvent() {
-        viewModel.setStateEvent(MainStateEvent.GetHeroesEvent())
+        viewModel.setStateEvent(MainStateEvent.GetHeroesEvent)
     }
 
     override fun onAttach(context: Context) {

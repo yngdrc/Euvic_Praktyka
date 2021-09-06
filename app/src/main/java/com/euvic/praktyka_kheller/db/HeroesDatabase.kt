@@ -5,7 +5,6 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.Room
 import com.euvic.praktyka_kheller.db.model.HeroDataClass
-import com.euvic.praktyka_kheller.db.model.HeroDetails
 
 
 @Database(entities = [HeroDataClass::class], version = 1)

@@ -7,6 +7,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rxjava2.subscribeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -19,11 +21,12 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.euvic.praktyka_kheller.db.model.HeroDataClass
-import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.main.MainViewModel
+import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.Constants
 import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_PREFIX
 import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_RES_VERT
+import com.euvic.praktyka_kheller.util.DataState
 import com.euvic.praktyka_kheller.util.DotaImageResourcesUrls
 
 const val ICON_SIZE: Float = 1f
@@ -239,8 +242,16 @@ fun HeroInfo(heroImage: String, heroDetails: HeroDataClass) {
 
 @ExperimentalCoilApi
 @Composable
-fun showDetails(viewModel: MainViewModel) {
-    val heroDetails: HeroDataClass? = viewModel.dataState.value?.data?.peekContent()?.details
+fun ShowDetails(viewModel: MainViewModel) {
+    val dataState: DataState<MainViewState> by viewModel.dataState.subscribeAsState(initial = DataState.data(
+        null,
+        MainViewState(
+            null,
+            null
+        )
+    ))
+
+    val heroDetails: HeroDataClass? = dataState.data?.peekContent()?.details
     val heroImage: String = null?: Constants.STEAM_DOTA_IMAGES_URL.plus(
         heroDetails?.name?.replace(
             STEAM_DOTA_IMAGES_PREFIX,

@@ -1,7 +1,6 @@
 package com.euvic.praktyka_kheller.util
 
 import com.euvic.praktyka_kheller.db.model.HeroDataClass
-import com.euvic.praktyka_kheller.db.model.HeroDetails
 
 class Constants {
     companion object {

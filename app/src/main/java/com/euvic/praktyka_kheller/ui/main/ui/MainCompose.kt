@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.text.font.FontWeight
@@ -19,15 +18,17 @@ import coil.annotation.ExperimentalCoilApi
 import coil.compose.ImagePainter
 import coil.compose.rememberImagePainter
 import com.euvic.praktyka_kheller.db.model.HeroDataClass
-import com.euvic.praktyka_kheller.db.model.HeroDetails
 import com.euvic.praktyka_kheller.ui.main.MainViewModel
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
+import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.ui.theme.HeroItemBg
 import com.euvic.praktyka_kheller.ui.theme.HeroNameColor
 import com.euvic.praktyka_kheller.ui.theme.Shapes
 import com.euvic.praktyka_kheller.util.Constants
 import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_RES_VERT
+import com.euvic.praktyka_kheller.util.DataState
 import com.google.accompanist.swiperefresh.SwipeRefresh
+import androidx.compose.runtime.rxjava2.subscribeAsState
 
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
@@ -75,32 +76,32 @@ fun SetHeroItem(item: HeroDataClass, viewModel: MainViewModel, position: Int) {
 @ExperimentalAnimationApi
 @Composable
 fun SetSwipeRefresh(viewModel: MainViewModel) {
-    val dataExample = viewModel.dataState.observeAsState()
-    dataExample.value?.let {
-        viewModel.dataState.value?.let { it1 ->
-            SwipeRefresh(state = it1.loading, onRefresh = { viewModel.setStateEvent(MainStateEvent.GetHeroesEvent) }) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                ) {
-                    dataExample.value!!.data?.peekContent()?.heroes?.let { it2 ->
-                        items(
-                            count = it2.size
-                        ) { index ->
-                            dataExample.value?.let {
-                                val heroesList = dataExample.value?.data?.peekContent()?.heroes
-                                heroesList?.get(index)?.let { it1 ->
-                                    SetHeroItem(
-                                        it1,
-                                        viewModel,
-                                        index
-                                    )
-                                }
-                            }
-                        }
-                    }
+
+    val dataState: DataState<MainViewState> by viewModel.dataState.subscribeAsState(initial = DataState.data(
+        null,
+        MainViewState(
+            null,
+            null
+        )
+    ))
+        SwipeRefresh(state = dataState.loading, onRefresh = { viewModel.setStateEvent(MainStateEvent.GetHeroesEvent) }) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            val heroesList: List<HeroDataClass>? = dataState.data?.peekContent()?.heroes
+            if (heroesList != null) {
+                items(
+                    count = heroesList.size
+                ) { index ->
+                    SetHeroItem(
+                        heroesList[index],
+                        viewModel,
+                        index
+                    )
                 }
             }
         }
     }
 }
+

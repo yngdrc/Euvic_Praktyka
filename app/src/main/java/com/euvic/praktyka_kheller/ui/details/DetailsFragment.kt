@@ -27,7 +27,7 @@ class DetailsFragment : Fragment() {
         }?: throw Exception("Invalid activity")
         return ComposeView(requireContext()).apply {
             setContent {
-                showDetails(viewModel)
+                ShowDetails(viewModel)
             }
         }
     }

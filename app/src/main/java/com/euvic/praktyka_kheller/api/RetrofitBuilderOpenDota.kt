@@ -1,9 +1,8 @@
 package com.euvic.praktyka_kheller.api
 
-import com.euvic.praktyka_kheller.util.Constants.Companion.OPENDOTA_HEROES_URL
 import com.euvic.praktyka_kheller.util.Constants.Companion.OPENDOTA_HEROES_URL_2
-import com.euvic.praktyka_kheller.util.LiveDataCallAdapterFactory
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitBuilderOpenDota {
@@ -11,7 +10,7 @@ object RetrofitBuilderOpenDota {
     private val retrofitBuilder: Retrofit.Builder by lazy {
         Retrofit.Builder()
             .baseUrl(OPENDOTA_HEROES_URL_2)
-            .addCallAdapterFactory(LiveDataCallAdapterFactory())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
             .addConverterFactory(GsonConverterFactory.create())
     }
 

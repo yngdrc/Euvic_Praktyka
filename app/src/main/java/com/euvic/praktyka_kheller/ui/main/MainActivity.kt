@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
@@ -17,26 +18,27 @@ class MainActivity : FragmentActivity(), DataStateListener {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var finalHost: NavHostFragment
-    //public lateinit var heroesDatabase: HeroesDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // creates MainViewModel
         viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        //createHeroesDatabase()
-        //triggerGetHeroesEvent()
 
+        // sets up the fragment container
         val fragmentContainerView = FragmentContainerView(this)
-        fragmentContainerView.setBackgroundColor(resources.getColor(R.color.black))
+        fragmentContainerView.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
         fragmentContainerView.layoutParams = ViewGroup.LayoutParams(ConstraintLayout.LayoutParams.MATCH_PARENT, ConstraintLayout.LayoutParams.MATCH_PARENT)
         fragmentContainerView.id = View.generateViewId()
         setContentView(fragmentContainerView)
 
+        // sets the navigation host fragment to fragment container
         finalHost = NavHostFragment.create(R.navigation.main_graph)
         supportFragmentManager.beginTransaction()
             .replace(fragmentContainerView.id, finalHost)
             .setPrimaryNavigationFragment(finalHost) // equivalent to app:defaultNavHost="true"
             .commit()
     }
+
 
     override fun onDataStateChange(dataState: DataState<*>?) {
         handleDataStateChanged(dataState)

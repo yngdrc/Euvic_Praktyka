@@ -10,7 +10,11 @@
         android:label="AllHeroesFragment" >
         <action
             android:id="@+id/action_allHeroesFragment_to_detailsFragment"
-            app:destination="@id/detailsFragment" />
+            app:destination="@id/detailsFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
     <fragment
         android:id="@+id/detailsFragment"
@@ -18,6 +22,11 @@
         android:label="DetailsFragment" >
         <action
             android:id="@+id/action_detailsFragment_to_allHeroesFragment"
-            app:destination="@id/allHeroesFragment" />
+            app:destination="@id/allHeroesFragment"
+            app:popUpTo="@id/allHeroesFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
     </fragment>
 </navigation>

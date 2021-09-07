@@ -7,6 +7,7 @@ import com.google.gson.annotations.SerializedName
 
 @Entity(tableName = "heroes")
 data class HeroDataClass(
+
     @Expose
     @SerializedName("agi_gain")
     val agi_gain: Double,

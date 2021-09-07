@@ -4,30 +4,38 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.*
 import com.euvic.praktyka_kheller.api.RetrofitBuilderOpenDota
-import com.euvic.praktyka_kheller.db.HeroesDao
 import com.euvic.praktyka_kheller.db.HeroesDatabase
 import com.euvic.praktyka_kheller.db.model.HeroDataClass
-import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import com.euvic.praktyka_kheller.ui.main.state.MainViewState
 import com.euvic.praktyka_kheller.util.*
 import com.google.gson.Gson
-import io.reactivex.Observable
-import io.reactivex.ObservableSource
-import io.reactivex.schedulers.Schedulers
-import io.reactivex.subjects.BehaviorSubject
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.schedulers.Schedulers
 
 // on error przechodzimy do database, dorzucenie dispose
 
 class HeroesDatasource(application: Application) {
     private val heroesDatabase: HeroesDatabase = HeroesDatabase.getDatabase(application)
+    private val heroesRepo: HeroesRepo = HeroesRepo(heroesDatabase.heroesDao())
+    lateinit var heroDetails: HeroDataClass
 
     fun getHeroes(): Observable<DataState<MainViewState>> {
-        return RetrofitBuilderOpenDota.apiService.getAllHeroes().subscribeOn(Schedulers.io())
+        return RetrofitBuilderOpenDota.apiService.getAllHeroes()
             .map {
                 val keySet = it.keySet()
-                val heroesList: ArrayList<HeroDataClass> = ArrayList<HeroDataClass>(keySet.size)
+                val heroesList: ArrayList<HeroDataClass> = ArrayList(keySet.size)
                 keySet.forEach { key ->
-                    heroesList.add(Gson().fromJson(it[key], HeroDataClass::class.java))
+                    heroDetails = Gson().fromJson(it[key], HeroDataClass::class.java)
+                    heroesList.add(heroDetails)
+                    if (heroesDatabase.heroesDao().getHeroes().isEmpty()) {
+                        Log.d("Empty", "Empty")
+                        heroesRepo
+                            .insertHero(heroDetails)
+                    } else {
+                        heroesRepo
+                            .updateHero(heroDetails)
+                    }
                 }
                 DataState.data(
                     null,
@@ -37,21 +45,29 @@ class HeroesDatasource(application: Application) {
                     )
                 )
             }.onErrorResumeNext { throwable: Throwable ->
-                heroesDatabase.heroesDao().getHeroes()
                 return@onErrorResumeNext ObservableSource {
                     Log.d("Error", throwable.toString())
                 }
-
-            }
+            }.doOnComplete {
+            }.subscribeOn(Schedulers.io())
     }
 
     fun getDetails(index: Int): Observable<DataState<MainViewState>> {
-        return RetrofitBuilderOpenDota.apiService.getAllHeroes().subscribeOn(Schedulers.io())
+        return RetrofitBuilderOpenDota.apiService.getAllHeroes()
             .map {
                 val keySet = it.keySet()
-                val heroesList: ArrayList<HeroDataClass> = ArrayList<HeroDataClass>(keySet.size)
+                val heroesList: ArrayList<HeroDataClass> = ArrayList(keySet.size)
                 keySet.forEach { key ->
-                    heroesList.add(Gson().fromJson(it[key], HeroDataClass::class.java))
+                    heroDetails = Gson().fromJson(it[key], HeroDataClass::class.java)
+                    heroesList.add(heroDetails)
+                    if (heroesDatabase.heroesDao().getHeroes().isEmpty()) {
+                        Log.d("Empty", "Empty")
+                        heroesRepo
+                            .insertHero(heroDetails)
+                    } else {
+                        heroesRepo
+                            .updateHero(heroDetails)
+                    }
                 }
                 DataState.data(
                     null,
@@ -65,7 +81,6 @@ class HeroesDatasource(application: Application) {
                 return@onErrorResumeNext ObservableSource {
                     Log.d("Error", throwable.toString())
                 }
-
-            }
+            }.subscribeOn(Schedulers.io())
     }
 }

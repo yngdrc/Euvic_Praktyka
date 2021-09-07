@@ -7,38 +7,37 @@ import android.view.*
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import com.euvic.praktyka_kheller.R
 import com.euvic.praktyka_kheller.ui.DataStateListener
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import java.lang.ClassCastException
 import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.navOptions
 import coil.annotation.ExperimentalCoilApi
 import com.euvic.praktyka_kheller.ui.main.ui.SetSwipeRefresh
-//import com.euvic.praktyka_kheller.ui.main.ui.SetSwipeRefresh
 import com.google.accompanist.appcompattheme.AppCompatTheme
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.rxkotlin.addTo
-import io.reactivex.schedulers.Schedulers
-import java.io.IOException
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.disposables.CompositeDisposable
+import io.reactivex.rxjava3.kotlin.addTo
 
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
 class AllHeroesFragment : Fragment() {
 
     private lateinit var dataStateListener: DataStateListener
-    private lateinit var viewModel: MainViewModel
-    val compositeDisposable = CompositeDisposable()
+    //private lateinit var viewModel: MainViewModel
+    private val compositeDisposable = CompositeDisposable()
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        viewModel = activity?.run {
-            ViewModelProvider(this).get(MainViewModel::class.java)
-        }?: throw Exception("Invalid activity")
+//        viewModel = activity?.run {
+//            ViewModelProvider(this).get(MainViewModel::class.java)
+//        }?: throw Exception("Invalid activity")
         return ComposeView(requireContext()).apply {
             setContent {
                 AppCompatTheme {
@@ -49,8 +48,8 @@ class AllHeroesFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        triggerGetHeroesEvent()
         super.onViewCreated(view, savedInstanceState)
-        //triggerGetHeroesEvent()
     }
 
     override fun onResume() {
@@ -59,7 +58,7 @@ class AllHeroesFragment : Fragment() {
     }
 
     private fun subscribeObservers() {
-        viewModel.dataState.subscribeOn(Schedulers.io()).subscribe(
+        viewModel.dataState.subscribe(
             {
                 dataStateListener.onDataStateChange(it)
                 it.data?.let { event ->
@@ -67,7 +66,6 @@ class AllHeroesFragment : Fragment() {
                         mainViewState.heroes?.let { it ->
                             viewModel.setHeroesListData(it)
                         }
-
                         mainViewState.details?.let { it ->
                             viewModel.setDetails(it)
                         }
@@ -79,20 +77,11 @@ class AllHeroesFragment : Fragment() {
             }
         ).addTo(compositeDisposable)
 
-        viewModel.viewState.subscribeOn(Schedulers.io()).subscribe(
+        viewModel.viewState.observeOn(AndroidSchedulers.mainThread()).subscribe(
             { viewState ->
-                Log.d("VS", viewState.toString())
                 viewState.details?.let {
-                    Log.d("AHF", "details")
                     NavHostFragment.findNavController(this).navigate(
-                        R.id.action_allHeroesFragment_to_detailsFragment
-                        ,null,
-                        navOptions { // Use the Kotlin DSL for building NavOptions
-                            anim {
-                                enter = android.R.animator.fade_in
-                                exit = android.R.animator.fade_out
-                            }
-                        })
+                        R.id.action_allHeroesFragment_to_detailsFragment)
                 }
             },
             {
@@ -105,9 +94,9 @@ class AllHeroesFragment : Fragment() {
         viewModel.setStateEvent(MainStateEvent.GetHeroesEvent)
     }
 
-    override fun onPause() {
+    override fun onDestroy() {
         compositeDisposable.dispose()
-        super.onPause()
+        super.onDestroy()
     }
 
     override fun onAttach(context: Context) {

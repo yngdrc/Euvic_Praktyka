@@ -15,8 +15,10 @@ interface HeroesDao {
     @Delete
     fun delete(hero: HeroDataClass)
 
-
     // potrzebne osobne query ktore sprawdzi czy jest jakikolwiek element (type Boolean)
+//    @Query("")
+//    fun isEmpty()
+
     @Query("SELECT * FROM heroes")
     fun getHeroes(): List<HeroDataClass>
 

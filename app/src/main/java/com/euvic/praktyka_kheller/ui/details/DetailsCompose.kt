@@ -1,6 +1,7 @@
 package com.euvic.praktyka_kheller.ui.details
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -8,7 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rxjava2.subscribeAsState
+import androidx.compose.runtime.rxjava3.subscribeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,6 +29,7 @@ import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_PRE
 import com.euvic.praktyka_kheller.util.Constants.Companion.STEAM_DOTA_IMAGES_RES_VERT
 import com.euvic.praktyka_kheller.util.DataState
 import com.euvic.praktyka_kheller.util.DotaImageResourcesUrls
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 const val ICON_SIZE: Float = 1f
 const val ATTR_ICON_SIZE: Float = 2f
@@ -41,6 +43,7 @@ fun AddSpacer(height: Dp = 0.dp, width: Dp = 0.dp) {
     )
 }
 
+@ExperimentalCoilApi
 @Composable
 fun AttrContainer(heroDetails: HeroDataClass) {
     Row {
@@ -112,6 +115,7 @@ fun AttrContainer(heroDetails: HeroDataClass) {
     }
 }
 
+@ExperimentalCoilApi
 @Composable
 fun AttackStatsContainer(heroDetails: HeroDataClass) {
         Column(
@@ -120,7 +124,7 @@ fun AttackStatsContainer(heroDetails: HeroDataClass) {
         ) {
             Text(text = "ATTACK", color = Color.LightGray)
             AddSpacer(5.dp, 0.dp)
-            Row() {
+            Row {
                 Image(
                     painter = rememberImagePainter(DotaImageResourcesUrls.ICON_DAMAGE),
                     contentDescription = null,
@@ -131,7 +135,7 @@ fun AttackStatsContainer(heroDetails: HeroDataClass) {
                 Text(text = "${heroDetails.base_attack_min} - ${heroDetails.base_attack_max}", color = Color.White)
             }
             AddSpacer(5.dp, 0.dp)
-            Row() {
+            Row {
                 Image(
                     painter = rememberImagePainter(DotaImageResourcesUrls.ICON_ATTACK_TIME),
                     contentDescription = null,
@@ -142,7 +146,7 @@ fun AttackStatsContainer(heroDetails: HeroDataClass) {
                 Text(text = "${heroDetails.attack_rate}", color = Color.White)
             }
             AddSpacer(5.dp, 0.dp)
-            Row() {
+            Row {
                 Image(
                     painter = rememberImagePainter(DotaImageResourcesUrls.ICON_ATTACK_RANGE),
                     contentDescription = null,
@@ -155,6 +159,7 @@ fun AttackStatsContainer(heroDetails: HeroDataClass) {
         }
 }
 
+@ExperimentalCoilApi
 @Composable
 fun DefenseStatsContainer(heroDetails: HeroDataClass) {
     Column(
@@ -174,7 +179,7 @@ fun DefenseStatsContainer(heroDetails: HeroDataClass) {
             Text(text = "${heroDetails.base_armor}", color = Color.White)
         }
         AddSpacer(5.dp, 0.dp)
-        Row() {
+        Row {
             Image(
                 painter = rememberImagePainter(DotaImageResourcesUrls.ICON_MAGIC_RESIST),
                 contentDescription = null,
@@ -187,6 +192,7 @@ fun DefenseStatsContainer(heroDetails: HeroDataClass) {
     }
 }
 
+@ExperimentalCoilApi
 @Composable
 fun MobilityStatsContainer(heroDetails: HeroDataClass) {
     Column(
@@ -195,7 +201,7 @@ fun MobilityStatsContainer(heroDetails: HeroDataClass) {
     ) {
         Text(text = "MOBILITY", color = Color.LightGray)
         AddSpacer(5.dp, 0.dp)
-        Row() {
+        Row {
             Image(
                 painter = rememberImagePainter(DotaImageResourcesUrls.ICON_MOVEMENT_SPEED),
                 contentDescription = null,
@@ -206,7 +212,7 @@ fun MobilityStatsContainer(heroDetails: HeroDataClass) {
             Text(text = "${heroDetails.move_speed}", color = Color.White)
         }
         AddSpacer(5.dp, 0.dp)
-        Row() {
+        Row {
             Image(
                 painter = rememberImagePainter(DotaImageResourcesUrls.ICON_TURN_RATE),
                 contentDescription = null,
@@ -219,6 +225,7 @@ fun MobilityStatsContainer(heroDetails: HeroDataClass) {
     }
 }
 
+@ExperimentalCoilApi
 @Composable
 fun HeroInfo(heroImage: String, heroDetails: HeroDataClass) {
     Image(
@@ -264,14 +271,14 @@ fun ShowDetails(viewModel: MainViewModel) {
                 .fillMaxSize()
         ) {
             HeroInfo(heroImage, heroDetails)
-            AddSpacer(height = 20.dp, width = 0.dp)
+            AddSpacer(height = 30.dp, width = 0.dp)
             AttrContainer(heroDetails)
-            AddSpacer(30.dp, 0.dp)
+            AddSpacer(40.dp, 0.dp)
             Row {
                 AttackStatsContainer(heroDetails = heroDetails)
-                AddSpacer(0.dp, 30.dp)
+                AddSpacer(0.dp, 50.dp)
                 DefenseStatsContainer(heroDetails = heroDetails)
-                AddSpacer(0.dp, 30.dp)
+                AddSpacer(0.dp, 50.dp)
                 MobilityStatsContainer(heroDetails = heroDetails)
             }
         }

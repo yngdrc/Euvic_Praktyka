@@ -11,6 +11,7 @@ import com.euvic.praktyka_kheller.util.*
 import com.google.gson.Gson
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableSource
+import io.reactivex.rxjava3.core.SingleSource
 import io.reactivex.rxjava3.schedulers.Schedulers
 
 // on error przechodzimy do database, dorzucenie dispose
@@ -21,7 +22,7 @@ class HeroesDatasource(application: Application) {
     lateinit var heroDetails: HeroDataClass
 
     fun getHeroes(): Observable<DataState<MainViewState>> {
-        return RetrofitBuilderOpenDota.apiService.getAllHeroes()
+        return RetrofitBuilderOpenDota.apiService.getAllHeroes().subscribeOn(Schedulers.io())
             .map {
                 val keySet = it.keySet()
                 val heroesList: ArrayList<HeroDataClass> = ArrayList(keySet.size)
@@ -45,15 +46,15 @@ class HeroesDatasource(application: Application) {
                     )
                 )
             }.onErrorResumeNext { throwable: Throwable ->
+                heroesDatabase.heroesDao().getHeroes()
                 return@onErrorResumeNext ObservableSource {
                     Log.d("Error", throwable.toString())
                 }
-            }.doOnComplete {
-            }.subscribeOn(Schedulers.io())
+            }
     }
 
     fun getDetails(index: Int): Observable<DataState<MainViewState>> {
-        return RetrofitBuilderOpenDota.apiService.getAllHeroes()
+        return RetrofitBuilderOpenDota.apiService.getAllHeroes().subscribeOn(Schedulers.io())
             .map {
                 val keySet = it.keySet()
                 val heroesList: ArrayList<HeroDataClass> = ArrayList(keySet.size)
@@ -81,6 +82,10 @@ class HeroesDatasource(application: Application) {
                 return@onErrorResumeNext ObservableSource {
                     Log.d("Error", throwable.toString())
                 }
-            }.subscribeOn(Schedulers.io())
+            }
+    }
+
+    fun getEmpty(): Observable<DataState<MainViewState>> {
+        return Observable.empty()
     }
 }

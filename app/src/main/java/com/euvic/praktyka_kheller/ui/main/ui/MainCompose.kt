@@ -1,5 +1,6 @@
 package com.euvic.praktyka_kheller.ui.main.ui
 
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.onDispose
 import androidx.compose.runtime.*
 import androidx.compose.runtime.rxjava3.subscribeAsState
 import androidx.compose.ui.Alignment
@@ -128,6 +130,7 @@ fun SetSwipeRefresh(viewModel: MainViewModel) {
             null
         )
     ))
+
         Column {
             SearchView(dataState)
             SwipeRefresh(
@@ -152,5 +155,6 @@ fun SetSwipeRefresh(viewModel: MainViewModel) {
                 }
             }
         }
+
 }
 

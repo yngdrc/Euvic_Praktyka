@@ -5,17 +5,19 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.material.Scaffold
 import androidx.compose.ui.platform.ComposeView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.NavHostFragment.findNavController
 import com.euvic.praktyka_kheller.R
 import com.euvic.praktyka_kheller.ui.DataStateListener
 import com.euvic.praktyka_kheller.ui.main.state.MainStateEvent
 import java.lang.ClassCastException
-import androidx.navigation.fragment.NavHostFragment
 import coil.annotation.ExperimentalCoilApi
 import com.euvic.praktyka_kheller.ui.main.ui.SetSwipeRefresh
+import com.euvic.praktyka_kheller.util.DataState
 import com.google.accompanist.appcompattheme.AppCompatTheme
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.CompositeDisposable
@@ -47,18 +49,19 @@ class AllHeroesFragment : Fragment() {
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        triggerGetHeroesEvent()
-        super.onViewCreated(view, savedInstanceState)
-    }
-
     override fun onResume() {
         subscribeObservers()
         super.onResume()
+        triggerGetHeroesEvent()
+    }
+
+    override fun onPause() {
+        compositeDisposable.clear()
+        super.onPause()
     }
 
     private fun subscribeObservers() {
-        viewModel.dataState.subscribe(
+        viewModel.dataState.observeOn(AndroidSchedulers.mainThread()).subscribe(
             {
                 dataStateListener.onDataStateChange(it)
                 it.data?.let { event ->
@@ -73,14 +76,14 @@ class AllHeroesFragment : Fragment() {
                 }
             },
             {
-               Log.d("Error", it.toString())
+                Log.d("Error", it.toString())
             }
         ).addTo(compositeDisposable)
 
         viewModel.viewState.observeOn(AndroidSchedulers.mainThread()).subscribe(
             { viewState ->
                 viewState.details?.let {
-                    NavHostFragment.findNavController(this).navigate(
+                    findNavController(this).navigate(
                         R.id.action_allHeroesFragment_to_detailsFragment)
                 }
             },
@@ -92,11 +95,6 @@ class AllHeroesFragment : Fragment() {
 
     private fun triggerGetHeroesEvent() {
         viewModel.setStateEvent(MainStateEvent.GetHeroesEvent)
-    }
-
-    override fun onDestroy() {
-        compositeDisposable.dispose()
-        super.onDestroy()
     }
 
     override fun onAttach(context: Context) {

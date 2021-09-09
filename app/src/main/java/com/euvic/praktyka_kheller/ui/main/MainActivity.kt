@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -16,13 +17,13 @@ import com.euvic.praktyka_kheller.util.DataState
 
 class MainActivity : FragmentActivity(), DataStateListener {
 
-    private lateinit var viewModel: MainViewModel
+    private val viewModel: MainViewModel by viewModels()
     private lateinit var finalHost: NavHostFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // creates MainViewModel
-        viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
+        //viewModel = ViewModelProvider(this).get(MainViewModel::class.java)
 
         // sets up the fragment container
         val fragmentContainerView = FragmentContainerView(this)
@@ -35,7 +36,7 @@ class MainActivity : FragmentActivity(), DataStateListener {
         finalHost = NavHostFragment.create(R.navigation.main_graph)
         supportFragmentManager.beginTransaction()
             .replace(fragmentContainerView.id, finalHost)
-            .setPrimaryNavigationFragment(finalHost) // equivalent to app:defaultNavHost="true"
+            .setPrimaryNavigationFragment(finalHost)
             .commit()
     }
 
